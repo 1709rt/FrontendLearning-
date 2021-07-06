@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './style.css';
 import { TaskHeader } from '../TaskHeader';
 import { TaskInfoBlock } from '../TaskInfoBlock';
@@ -22,12 +22,23 @@ function Task({ task, onTaskChanged }: TaskProps) {
     onTaskChanged(newTask);
   };
 
+  const removeFile = (id: string) => {
+    const newFiles = task.files?.filter((file) => file.id !== id);
+
+    const newTask: TaskType = { ...task, files: newFiles };
+
+    onTaskChanged(newTask);
+  };
+
   return (
     <div className='task'>
       <TaskHeader
+        isDone={task.isDone}
         data={task.createdAt}
         creator={task.assigner}
         name={task.title}
+        onTaskUpdate={onTaskChanged}
+        task={task}
       />
       <div className='task__info-blocks'>
         <TaskInfoBlock title={'Asign To'} executor={task.asignTo} />
@@ -41,9 +52,13 @@ function Task({ task, onTaskChanged }: TaskProps) {
           {task.files.map((item) => {
             return (
               <TaskFiles
+                id={item.id}
                 preview={item.preview}
                 name={item.name}
                 size={item.size}
+                onRemoveFile={removeFile}
+                key={item.id}
+                sizeSign={item.sizeSign}
               />
             );
           })}
